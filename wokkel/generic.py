@@ -22,7 +22,7 @@ except ImportError:
 
 from wokkel import disco
 from wokkel.iwokkel import IDisco
-from wokkel.subprotocols import XMPPHandler
+from wokkel.subprotocols import XMPPHandler, IQHandlerMixin
 
 IQ_GET = '/iq[@type="get"]'
 IQ_SET = '/iq[@type="set"]'
@@ -89,7 +89,7 @@ class FallbackHandler(XMPPHandler):
 
 
 
-class VersionHandler(XMPPHandler):
+class VersionHandler(XMPPHandler, IQHandlerMixin):
     """
     XMPP subprotocol handler for XMPP Software Version.
 
@@ -99,12 +99,14 @@ class VersionHandler(XMPPHandler):
 
     implements(IDisco)
 
+    iqHandlers = {VERSION: 'onVersion'}
+
     def __init__(self, name, version):
         self.name = name
         self.version = version
 
     def connectionInitialized(self):
-        self.xmlstream.addObserver(VERSION, self.onVersion)
+        self.xmlstream.addObserver(VERSION, self.handleRequest)
 
     def onVersion(self, iq):
         response = toResponse(iq, "result")
@@ -113,8 +115,6 @@ class VersionHandler(XMPPHandler):
         name = query.addElement("name", content=self.name)
         version = query.addElement("version", content=self.version)
         self.send(response)
-
-        iq.handled = True
 
     def getDiscoInfo(self, requestor, target, node):
         info = set()
