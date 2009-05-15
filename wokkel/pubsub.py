@@ -634,6 +634,16 @@ class PubSubClient(XMPPHandler):
         pass
 
 
+    def _addOptionsFromDict(self, request, conf):
+        form = data_form.Form(formType="submit",
+                              formNamespace=NS_PUBSUB_NODE_CONFIG)
+
+        for k,v in conf.iteritems():
+            form.addField(data_form.Field(var=k, value=str(v)))
+
+        request.options = form
+
+
     def createNode(self, service, nodeIdentifier=None, sender=None):
         """
         Create a publish subscribe node.
@@ -680,13 +690,7 @@ class PubSubClient(XMPPHandler):
         request.nodeIdentifier = nodeIdentifier
         request.sender = sender
 
-        form = data_form.Form(formType="submit",
-                              formNamespace=NS_PUBSUB_NODE_CONFIG)
-
-        for k,v in conf.iteritems():
-            form.addField(data_form.Field(var=k, value=str(v)))
-
-        request.options = form
+        self._addOptionsFromDict(request, conf)
 
         return request.send(self.xmlstream)
 
