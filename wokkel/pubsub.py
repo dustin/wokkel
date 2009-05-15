@@ -490,7 +490,7 @@ class PubSubRequest(generic.Stanza):
              childURI,
              childName) = self._verbRequestMap[self.verb]
         except KeyError:
-            raise NotImplementedError()
+            raise NotImplementedError("Unhandled verb:  " + str(self.verb))
 
         iq = IQ(xs, self.stanzaType)
         iq.addElement((childURI, 'pubsub'))
