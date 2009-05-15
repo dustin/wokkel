@@ -698,6 +698,27 @@ class PubSubClient(XMPPHandler):
 
         return request.send(self.xmlstream)
 
+
+    def getNodeConfiguration(self, service, nodeIdentifier, sender=None):
+        """
+        Apply a configuration to a node.
+
+        @param service: The pubsub service where the node exists
+        @type service: L{JID}
+        @param nodeIdentifier: Identifier of the node to configure
+        @type nodeIdentifier: C{unicode}
+        @param sender: The entity from which the notification should be sent
+        @type sender: L{JID}
+        """
+
+        request = PubSubRequest('configureGet')
+        request.recipient = service
+        request.nodeIdentifier = nodeIdentifier
+        request.sender = sender
+
+        return request.send(self.xmlstream)
+
+
     def deleteNode(self, service, nodeIdentifier, sender=None):
         """
         Delete a publish subscribe node.
