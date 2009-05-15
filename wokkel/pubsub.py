@@ -234,7 +234,7 @@ class PubSubRequest(generic.Stanza):
         'optionsSet': ['nodeOrEmpty', 'jid', 'options'],
         'subscriptions': [],
         'affiliations': [],
-        'create': ['nodeOrNone'],
+        'create': ['nodeOrNone', 'configure'],
         'default': ['default'],
         'configureGet': ['nodeOrEmpty'],
         'configureSet': ['nodeOrEmpty', 'configure'],
@@ -437,7 +437,9 @@ class PubSubRequest(generic.Stanza):
 
 
     def _render_configure(self, verbElement):
-        verbElement.addChild(self.options.toElement())
+        if self.options:
+            verbElement.addChild(self.options.toElement())
+
 
     def _parse_options(self, verbElement):
         form = PubSubRequest._findForm(verbElement, NS_PUBSUB_SUBSCRIBE_OPTIONS)
@@ -644,7 +646,7 @@ class PubSubClient(XMPPHandler):
         request.options = form
 
 
-    def createNode(self, service, nodeIdentifier=None, sender=None):
+    def createNode(self, service, nodeIdentifier=None, sender=None, conf={}):
         """
         Create a publish subscribe node.
 
@@ -657,6 +659,8 @@ class PubSubClient(XMPPHandler):
         request.recipient = service
         request.nodeIdentifier = nodeIdentifier
         request.sender = sender
+
+        self._addOptionsFromDict(request, conf)
 
         def cb(iq):
             try:
