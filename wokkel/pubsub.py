@@ -436,6 +436,9 @@ class PubSubRequest(generic.Stanza):
             verbElement['max_items'] = unicode(self.maxItems)
 
 
+    def _render_configure(self, verbElement):
+        verbElement.addChild(self.options.toElement())
+
     def _parse_options(self, verbElement):
         form = PubSubRequest._findForm(verbElement, NS_PUBSUB_SUBSCRIBE_OPTIONS)
         if form:
