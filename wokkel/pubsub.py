@@ -661,6 +661,35 @@ class PubSubClient(XMPPHandler):
         return d
 
 
+    def configureNode(self, service, nodeIdentifier, conf={}, sender=None):
+        """
+        Apply a configuration to a node.
+
+        @param service: The pubsub service where the node exists
+        @type service: L{JID}
+        @param conf: form values to configure
+        @type conf: dict
+        @param nodeIdentifier: Identifier of the node to configure
+        @type nodeIdentifier: C{unicode}
+        @param sender: The entity from which the notification should be sent
+        @type sender: L{JID}
+        """
+
+        request = PubSubRequest('configureSet')
+        request.recipient = service
+        request.nodeIdentifier = nodeIdentifier
+        request.sender = sender
+
+        form = data_form.Form(formType="submit",
+                              formNamespace=NS_PUBSUB_NODE_CONFIG)
+
+        for k,v in conf.iteritems():
+            form.addField(data_form.Field(var=k, value=str(v)))
+
+        request.options = form
+
+        return request.send(self.xmlstream)
+
     def deleteNode(self, service, nodeIdentifier, sender=None):
         """
         Delete a publish subscribe node.
