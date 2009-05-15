@@ -660,7 +660,8 @@ class PubSubClient(XMPPHandler):
         request.nodeIdentifier = nodeIdentifier
         request.sender = sender
 
-        self._addOptionsFromDict(request, conf)
+        if conf:
+            self._addOptionsFromDict(request, conf)
 
         def cb(iq):
             try:
