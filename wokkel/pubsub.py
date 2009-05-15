@@ -641,7 +641,11 @@ class PubSubClient(XMPPHandler):
                               formNamespace=NS_PUBSUB_NODE_CONFIG)
 
         for k,v in conf.iteritems():
-            form.addField(data_form.Field(var=k, value=str(v)))
+            if getattr(v, '__iter__', False) and not isinstance(v, basestring):
+                form.addField(data_form.Field(fieldType='text-multi',
+                                              var=k, values=[str(x) for x in v]))
+            else:
+                form.addField(data_form.Field(var=k, value=str(v)))
 
         request.options = form
 
